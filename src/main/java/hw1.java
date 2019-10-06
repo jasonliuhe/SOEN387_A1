@@ -60,8 +60,8 @@ public class hw1 extends HttpServlet {
             throws ServletException, IOException {
         
         String format = new String(request.getParameter("format").getBytes("ISO8859-1"),"UTF-8");
-        String param1 = new String(request.getParameter("param1").getBytes("ISO8859-1"),"UTF-8");
-        String param2 = new String(request.getParameter("param2").getBytes("ISO8859-1"),"UTF-8");
+        String param1 = new String(request.getParameter("name").getBytes("ISO8859-1"),"UTF-8");
+        String param2 = new String(request.getParameter("email").getBytes("ISO8859-1"),"UTF-8");
         System.out.println(format);PrintWriter out = response.getWriter();
         Enumeration names = request.getHeaderNames();
         
@@ -80,7 +80,7 @@ public class hw1 extends HttpServlet {
                   }
                 }
             }
-            out.println("out.println(Query String:\n\tformat: " + format + "\n\tparam1: " + param1 + "\n\tparam2: "+ param2);
+            out.println("Query String:\n\tformat: " + format + "\n\tname: " + param1 + "\n\temail: "+ param2);
         } else if(format.equals("xml"))  {
             out.println("<response>");
             out.println("\t<Request Method>GET</Request Method>");
@@ -97,7 +97,7 @@ public class hw1 extends HttpServlet {
             }
             out.println("\t</Request Headers>");
             
-            out.println("<query String>\n\t<format>" + format + "</format>" + "\n\t<param1>" + param1 + "</param1>" + "\n\t<param2>" + param2 + "</param2>\n" + "</query String>");
+            out.println("<query String>\n\t<format>" + format + "</format>" + "\n\t<name>" + param1 + "</name>" + "\n\t<email>" + param2 + "</email>\n" + "</query String>");
             out.println("</response>");
         } else {
             out.print(docType +
@@ -147,18 +147,15 @@ public class hw1 extends HttpServlet {
                             "<td>text </td>" +
                         "</tr>" +
                         "<tr>" +
-                            "<td>param1: </td>" + 
-                            "<td>val1 </td>" +
+                            "<td>name: </td>" + 
+                            "<td>"+param1+"</td>" +
                         "</tr>" +
                         "<tr>" +
-                            "<td>param1: </td>" + 
-                            "<td>val1 </td>" +
+                            "<td>email: </td>" + 
+                            "<td>"+param2+"</td>" +
                         "</tr>" + 
-            "</body></html>");
-             
+            "</body></html>");  
         }
-        
-
     }
 
     /**
@@ -172,7 +169,105 @@ public class hw1 extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+                
+        String format = new String(request.getParameter("format").getBytes("ISO8859-1"),"UTF-8");
+        String param1 = new String(request.getParameter("name").getBytes("ISO8859-1"),"UTF-8");
+        String param2 = new String(request.getParameter("email").getBytes("ISO8859-1"),"UTF-8");
+        System.out.println(format);PrintWriter out = response.getWriter();
+        Enumeration names = request.getHeaderNames();
+        
+        String docType = "<!DOCTYPE html> \n";
+        
+        
+        if(format.equals("text")) {
+            out.println("Request Method: GET\nRequest Headers:");
+            while(names.hasMoreElements()){
+                String name = (String) names.nextElement();
+                Enumeration values = request.getHeaders(name); // support multiple values
+                if (values != null) {
+                  while (values.hasMoreElements()) {
+                    String value = (String) values.nextElement();
+                    out.println("\t" + name + ": " + value);
+                  }
+                }
+            }
+            out.println("Query String:\n\tformat: " + format + "\n\tname: " + param1 + "\n\temail: "+ param2);
+        } else if(format.equals("xml"))  {
+            out.println("<response>");
+            out.println("\t<Request Method>GET</Request Method>");
+            out.println("\t<Request Headers>");
+            while(names.hasMoreElements()){
+                String name = (String) names.nextElement();
+                Enumeration values = request.getHeaders(name); // support multiple values
+                if (values != null) {
+                  while (values.hasMoreElements()) {
+                    String value = (String) values.nextElement();
+                    out.println("\t\t<header name=\"" + name + "\">" + value + "</header>");
+                  }
+                }
+            }
+            out.println("\t</Request Headers>");
+            
+            out.println("<query String>\n\t<format>" + format + "</format>" + "\n\t<name>" + param1 + "</name>" + "\n\t<email>" + param2 + "</email>\n" + "</query String>");
+            out.println("</response>");
+        } else {
+            out.print(docType +
+            "<html>\n" + 
+            "<head>\n" +
+                "<style>\n" +
+                    "table, th, td {\n" +
+                        "  border: 1px solid black;\n" +
+                        "  border-collapse: collapse;\n" +
+                        "}\n" +
+                    "th, td {\n" +
+                        "  padding: 5px;\n" +
+                        "  text-align: left;    \n" +
+                        "}\n" +
+                "</style>" +
+            "</head>" + 
+            "<body>\n" +
+                    "<table border=\"2\" bordercolor=\"black\" width=\"800\" cellspacing=\"0\" cellpadding=\"5\">" + 
+                        "<tr>" + 
+                            "<td>Request Method: </td>" + 
+                            "<td>GET</td>" + 
+                        "</tr>" + 
+                    "</table><br>" +
+                    "<table border=\"2\" bordercolor=\"black\" width=\"800\" cellspacing=\"0\" cellpadding=\"5\">" + 
+                        "<tr>" + 
+                            "<td colspan = \"2\">Request Headers: </td>");
+            
+            while(names.hasMoreElements()){
+                String name = (String) names.nextElement();
+                Enumeration values = request.getHeaders(name); // support multiple values
+                if (values != null) {
+                  while (values.hasMoreElements()) {
+                    String value = (String) values.nextElement();
+                    out.println("<tr><td>" + name + ": " + "</td> <td>" + value + "</td></tr>");
+                  }
+                }
+            }                 
+                    
+            out.print("</tr>" + 
+                    "</table><br>" + 
+                    "<table border=\"2\" bordercolor=\"black\" width=\"800\" cellspacing=\"0\" cellpadding=\"5\">" + 
+                        "<tr>" + 
+                            "<td colspan = \"2\">Query String: </td>" +
+                        "</tr>" +
+                        "<tr>" +
+                            "<td>format: </td>" + 
+                            "<td>text </td>" +
+                        "</tr>" +
+                        "<tr>" +
+                            "<td>name: </td>" + 
+                            "<td>"+param1+"</td>" +
+                        "</tr>" +
+                        "<tr>" +
+                            "<td>email: </td>" + 
+                            "<td>"+param2+"</td>" +
+                        "</tr>" + 
+            "</body></html>");  
+        }
+
     }
 
     /**
